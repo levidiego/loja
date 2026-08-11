@@ -1,0 +1,8 @@
+config/config.php
+assets/img/produtos/*
+!assets/img/produtos/.gitkeep
+assets/img/uploads/*
+!assets/img/uploads/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
