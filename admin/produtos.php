@@ -26,6 +26,7 @@ require __DIR__ . '/../includes/admin_header.php';
                 <th></th>
                 <th>Nome</th>
                 <th>Preco</th>
+                <th>Comissao</th>
                 <th>Venda via</th>
                 <th>Status</th>
                 <th>Acoes</th>
@@ -37,6 +38,7 @@ require __DIR__ . '/../includes/admin_header.php';
                     <td><img class="thumb-tabela" src="<?= imagem_produto($produto['imagem']) ?>" alt=""></td>
                     <td><?= h($produto['nome']) ?></td>
                     <td><?= formatar_preco($produto['preco']) ?></td>
+                    <td><?= $produto['comissao'] > 0 ? formatar_preco($produto['comissao']) : '—' ?></td>
                     <td><?= $produto['link_externo'] ? 'Link externo' : 'Pix' ?></td>
                     <td>
                         <span class="badge <?= $produto['ativo'] ? 'badge-ativo' : 'badge-inativo' ?>">

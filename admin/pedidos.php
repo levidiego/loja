@@ -31,6 +31,7 @@ require __DIR__ . '/../includes/admin_header.php';
                 <th>#</th>
                 <th>Produto</th>
                 <th>Valor</th>
+                <th>Repassar</th>
                 <th>Cliente</th>
                 <th>WhatsApp</th>
                 <th>Data</th>
@@ -44,6 +45,14 @@ require __DIR__ . '/../includes/admin_header.php';
                     <td>#<?= (int) $pedido['id'] ?></td>
                     <td><?= h($pedido['produto_nome']) ?></td>
                     <td><?= formatar_preco($pedido['valor']) ?></td>
+                    <td>
+                        <?php if ((float) $pedido['comissao'] > 0): ?>
+                            <?= formatar_preco($pedido['valor'] - $pedido['comissao']) ?>
+                            <div style="font-size:0.78rem;color:#8a8078;">(fica <?= formatar_preco($pedido['comissao']) ?>)</div>
+                        <?php else: ?>
+                            &mdash;
+                        <?php endif; ?>
+                    </td>
                     <td><?= h($pedido['nome_cliente']) ?></td>
                     <td>
                         <a target="_blank" rel="noopener" href="<?= h(link_whatsapp($pedido['telefone_cliente'], 'Ola ' . $pedido['nome_cliente'] . '! Sobre seu pedido #' . $pedido['id'] . '...')) ?>">

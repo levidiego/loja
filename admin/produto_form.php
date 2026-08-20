@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/functions.php';
 exigir_login_admin();
 
 $id = (int) ($_GET['id'] ?? $_POST['id'] ?? 0);
-$produto = ['nome' => '', 'descricao' => '', 'preco' => '', 'imagem' => '', 'link_externo' => '', 'ativo' => 1, 'ordem' => 0];
+$produto = ['nome' => '', 'descricao' => '', 'preco' => '', 'comissao' => '', 'imagem' => '', 'link_externo' => '', 'ativo' => 1, 'ordem' => 0];
 $erro = '';
 
 if ($id) {
@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $produto['nome'] = trim($_POST['nome'] ?? '');
     $produto['descricao'] = trim($_POST['descricao'] ?? '');
     $produto['preco'] = str_replace(',', '.', trim($_POST['preco'] ?? '0'));
+    $produto['comissao'] = str_replace(',', '.', trim($_POST['comissao'] ?? '0'));
     $produto['link_externo'] = trim($_POST['link_externo'] ?? '');
     $produto['ativo'] = isset($_POST['ativo']) ? 1 : 0;
     $produto['ordem'] = (int) ($_POST['ordem'] ?? 0);
@@ -29,6 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = 'Informe o nome do produto.';
     } elseif (!is_numeric($produto['preco']) || (float) $produto['preco'] < 0) {
         $erro = 'Informe um preco valido.';
+    } elseif ($produto['comissao'] === '' || !is_numeric($produto['comissao']) || (float) $produto['comissao'] < 0) {
+        $erro = 'Informe um valor de comissao valido (pode ser 0).';
+    } elseif ((float) $produto['comissao'] > (float) $produto['preco']) {
+        $erro = 'A comissao nao pode ser maior que o preco do produto.';
     } else {
         try {
             $novaImagem = salvar_imagem_produto($_FILES['imagem'] ?? null);
@@ -38,13 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($id) {
                 $stmt = db()->prepare(
-                    'UPDATE produtos SET nome=:nome, descricao=:descricao, preco=:preco, imagem=:imagem,
+                    'UPDATE produtos SET nome=:nome, descricao=:descricao, preco=:preco, comissao=:comissao, imagem=:imagem,
                      link_externo=:link_externo, ativo=:ativo, ordem=:ordem WHERE id=:id'
                 );
                 $stmt->execute([
                     'nome' => $produto['nome'],
                     'descricao' => $produto['descricao'],
                     'preco' => $produto['preco'],
+                    'comissao' => $produto['comissao'],
                     'imagem' => $produto['imagem'],
                     'link_externo' => $produto['link_externo'] ?: null,
                     'ativo' => $produto['ativo'],
@@ -53,13 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             } else {
                 $stmt = db()->prepare(
-                    'INSERT INTO produtos (nome, descricao, preco, imagem, link_externo, ativo, ordem)
-                     VALUES (:nome, :descricao, :preco, :imagem, :link_externo, :ativo, :ordem)'
+                    'INSERT INTO produtos (nome, descricao, preco, comissao, imagem, link_externo, ativo, ordem)
+                     VALUES (:nome, :descricao, :preco, :comissao, :imagem, :link_externo, :ativo, :ordem)'
                 );
                 $stmt->execute([
                     'nome' => $produto['nome'],
                     'descricao' => $produto['descricao'],
                     'preco' => $produto['preco'],
+                    'comissao' => $produto['comissao'],
                     'imagem' => $produto['imagem'],
                     'link_externo' => $produto['link_externo'] ?: null,
                     'ativo' => $produto['ativo'],
@@ -94,6 +101,10 @@ require __DIR__ . '/../includes/admin_header.php';
 
     <label for="preco">Preco (R$)</label>
     <input type="text" id="preco" name="preco" required value="<?= h($produto['preco']) ?>" placeholder="Ex: 49.90">
+
+    <label for="comissao">Comissao (R$) &mdash; valor que fica retido antes de repassar o restante ao(a) socio(a)</label>
+    <input type="text" id="comissao" name="comissao" required value="<?= h($produto['comissao']) ?>" placeholder="Ex: 15.00">
+    <p style="font-size:0.82rem;color:#8a8078;margin-top:4px;">Deixe 0 se este produto nao tem repasse — o valor todo fica com a loja.</p>
 
     <label for="imagem">Imagem do produto</label>
     <?php if (!empty($produto['imagem'])): ?>

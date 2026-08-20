@@ -26,13 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = 'Preencha seu nome e telefone para confirmar o pedido.';
     } else {
         $stmt = db()->prepare(
-            'INSERT INTO pedidos (produto_id, produto_nome, valor, nome_cliente, telefone_cliente, status)
-             VALUES (:produto_id, :produto_nome, :valor, :nome_cliente, :telefone_cliente, "pendente")'
+            'INSERT INTO pedidos (produto_id, produto_nome, valor, comissao, nome_cliente, telefone_cliente, status)
+             VALUES (:produto_id, :produto_nome, :valor, :comissao, :nome_cliente, :telefone_cliente, "pendente")'
         );
         $stmt->execute([
             'produto_id' => $produto['id'],
             'produto_nome' => $produto['nome'],
             'valor' => $produto['preco'],
+            'comissao' => $produto['comissao'],
             'nome_cliente' => $nomeCliente,
             'telefone_cliente' => $telefoneCliente,
         ]);
