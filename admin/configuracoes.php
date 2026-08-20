@@ -8,6 +8,12 @@ $sucesso = '';
 
 $campos = ['nome_loja', 'subtitulo', 'whatsapp', 'pix_chave', 'pix_nome', 'pix_cidade', 'cor_destaque'];
 
+$stmt = db()->query('SELECT chave, valor FROM configuracoes');
+$config = [];
+foreach ($stmt as $row) {
+    $config[$row['chave']] = $row['valor'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verificar();
     try {
@@ -20,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             set_config('logo', $novoLogo);
         }
 
+        if (!empty($_POST['remover_banner']) && !empty($config['banner'])) {
+            $caminhoAntigo = __DIR__ . '/../' . $config['banner'];
+            if (is_file($caminhoAntigo)) {
+                unlink($caminhoAntigo);
+            }
+            set_config('banner', '');
+            $config['banner'] = '';
+        }
+
         $novoBanner = salvar_imagem_enviada($_FILES['banner'] ?? null, 'assets/img/uploads', 'banner');
         if ($novoBanner) {
             set_config('banner', $novoBanner);
@@ -29,12 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (RuntimeException $e) {
         $erro = $e->getMessage();
     }
-}
 
-$stmt = db()->query('SELECT chave, valor FROM configuracoes');
-$config = [];
-foreach ($stmt as $row) {
-    $config[$row['chave']] = $row['valor'];
+    $stmt = db()->query('SELECT chave, valor FROM configuracoes');
+    $config = [];
+    foreach ($stmt as $row) {
+        $config[$row['chave']] = $row['valor'];
+    }
 }
 
 $paginaAtual = 'configuracoes';
@@ -64,7 +79,13 @@ require __DIR__ . '/../includes/admin_header.php';
     <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
 
     <label for="banner">Banner de destaque (aparece na pagina inicial)</label>
-    <?php if (!empty($config['banner'])): ?><img src="<?= h($config['banner']) ?>" style="max-height:100px;display:block;margin-bottom:6px;"><?php endif; ?>
+    <p style="font-size:0.82rem;color:#8a8078;margin:0 0 8px;">Tamanho recomendado: 1200x400px (paisagem, proporcao 3:1). A imagem e exibida centralizada com no maximo 320px de altura, entao fotos muito verticais ou com o assunto principal nas bordas ficam cortadas. Formatos JPG, PNG ou WEBP, ate 4MB.</p>
+    <?php if (!empty($config['banner'])): ?>
+        <img src="<?= h($config['banner']) ?>" style="max-height:100px;display:block;margin-bottom:6px;">
+        <label style="font-weight:normal;font-size:0.9rem;">
+            <input type="checkbox" name="remover_banner" value="1"> Remover banner atual
+        </label>
+    <?php endif; ?>
     <input type="file" id="banner" name="banner" accept="image/png,image/jpeg,image/webp">
 
     <h3>Contato</h3>
