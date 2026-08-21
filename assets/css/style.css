@@ -380,3 +380,68 @@ form input, form textarea, form select {
     border-radius: 6px;
     background: #eee;
 }
+
+/* Relatorio de vendas */
+.filtros-relatorio {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.form-personalizado {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+}
+
+.form-personalizado div { flex: 0 0 auto; }
+.form-personalizado label { margin: 0 0 4px; }
+.form-personalizado input, .form-personalizado select { width: auto; }
+
+.periodo-selecionado {
+    color: #8a8078;
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+}
+
+.cards-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.card-resumo {
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.card-resumo .rotulo {
+    font-size: 0.85rem;
+    color: #8a8078;
+}
+
+.card-resumo .valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-texto);
+}
+
+.card-resumo.destaque .valor { color: var(--cor-destaque); }
+
+.nota-status {
+    font-size: 0.85rem;
+    color: #8a8078;
+    margin-bottom: 18px;
+}
